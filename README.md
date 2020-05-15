@@ -46,3 +46,9 @@ Destroy the VM (destroys current folder VM if no ID specified):
 Check vagrant's VMs status and IDs:
 # vagrant global-status
 ```
+
+### Author's advice
+
+Use this VM with an associated Github project, covering contracts, migrations and test folders.
+
+The importWorkFolders.sh script can be easily modify in order to import your project into the truffle project inside the VM.
