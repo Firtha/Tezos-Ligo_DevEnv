@@ -1,6 +1,6 @@
 # Tezos-Ligo_DevEnv
 
-Vagrant VM : Ubuntu 18.04 with Truffle-Tezos
+Vagrant VM : Ubuntu 18.04 with Truffle-Tezos (based on the truffle box tezos-example).
 
 ## Installation
 
@@ -43,7 +43,7 @@ Stop the VM:
 Destroy the VM (destroys current folder VM if no ID specified):
 # vagrant destroy $VM_ID
 
-Check vagrant's VMs status and IDs:
+Check vagrant VMs status and IDs:
 # vagrant global-status
 ```
 
@@ -51,4 +51,4 @@ Check vagrant's VMs status and IDs:
 
 Use this VM with an associated Github project, covering contracts, migrations and test folders.
 
-The importWorkFolders.sh script can be easily modify in order to import your project into the truffle project inside the VM.
+The importWorkFolders.sh script updates the content of the truffle project (contracts, migrations and test files), inside the VM, with the content of your shared folder.
