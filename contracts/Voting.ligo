@@ -1,37 +1,51 @@
-// variant defining pseudo multi-entrypoint actions
-type action is
-| Increment of int
-| Decrement of int
-| Reset of unit
-
-type storage is record 
-counter : int;
-owner : address
+type vote_param is record
+vote_ID : nat;
+vote_value : string;
 end
 
-function add (const a : int ; const b : int) : int is
-  block { skip } with a + b
+type action is
+| CreateVote of string
+| TakingVote of vote_param
 
-function subtract (const a : int ; const b : int) : int is
-  block { skip } with a - b
+type storage is record
+contract_owner : address;
 
-function reset (const s : storage) : int is
+vote_owners : map(address, set(nat));
+
+nextVoteID : nat;
+vote_names : map(nat, string);
+vote_voters : map(nat, set(address));
+vote_yes : map(nat, nat);
+vote_no : map(nat, nat);
+vote_states : map(nat, bool);
+end
+
+function takeVote (const params : vote_param ; const s : storage) : storage is
   block { 
-    if Tezos.source =/= s.owner 
-    then failwith ("Access denied.")
-    else skip
-  } with 0
+    if params.vote_ID >= s.nextVoteID
+      then failwith ("Wrong vote index.")
+    else block{
+      const targetVoteState : option(bool) = s.vote_states[params.vote_ID];
+      const voteState : bool = case targetVoteState of
+      | None -> False
+      | Some(n) -> True
+      end;
+    }
+  } with s
 
-// real entrypoint that re-routes the flow based
-// on the action provided
+function createVote (const name : string ; const s : storage) storage is
+  block {
+    const newVoteID : nat = s.nextVoteID;
+    s.nextVoteID := s.nextVoteID + 1;
+
+    // Construction du nouveau vote avec les différents mappings
+
+  } with s
+
+
 function main (const p : action ; const s : storage) :
   (list(operation) * storage) is
-  block {  
-  const newCounter : int = case p of
-    | Increment(n) -> add(s.counter, n)
-    | Decrement(n) -> subtract(s.counter, n)
-    | Reset -> reset(s)
-  end;
-
-  s.counter := newCounter
-  } with ((nil : list(operation)), s)
+  block { skip } with ((nil : list(operation)),
+  case p of
+  | TakingVote(n) -> takeVote(n, s)
+  end)
