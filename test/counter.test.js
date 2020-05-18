@@ -1,6 +1,6 @@
-const Voting = artifacts.require("Voting");
+const Counter = artifacts.require("Counter");
 
-contract('Voting', () => {
+contract('Counter', () => {
   let counterInstance;
   let storage;
 
