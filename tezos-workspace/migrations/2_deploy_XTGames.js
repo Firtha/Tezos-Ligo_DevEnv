@@ -1,5 +1,5 @@
-const XTGames = artifacts.require("XTGames");
+const xTGames = artifacts.require("XTGames");
 
 module.exports = deployer => {
-  deployer.deploy(XTGames, 0);
+  deployer.deploy(xTGames, 0);
 };
