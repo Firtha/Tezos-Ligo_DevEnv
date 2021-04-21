@@ -36,14 +36,14 @@ sudo rm -rf /home/vagrant/tezos-workplace/contracts
 sudo rm -rf /home/vagrant/tezos-workplace/migrations
 sudo rm -rf /home/vagrant/tezos-workplace/test
 sudo rm /home/vagrant/tezos-workplace/truffle-config.js
-sudo cp -r /vagrant/contracts /home/vagrant/tezos-workplace/contracts
-sudo cp -r /vagrant/migrations /home/vagrant/tezos-workplace/migrations
-sudo cp -r /vagrant/test /home/vagrant/tezos-workplace/test
-sudo cp /vagrant/truffle-config.js /home/vagrant/tezos-workplace/truffle-config.js
+sudo cp -r /vagrant/tezos-workspace/contracts /home/vagrant/tezos-workplace/contracts
+sudo cp -r /vagrant/tezos-workspace/migrations /home/vagrant/tezos-workplace/migrations
+sudo cp -r /vagrant/tezos-workspace/test /home/vagrant/tezos-workplace/test
+sudo cp /vagrant/tezos-workspace/truffle-config.js /home/vagrant/tezos-workplace/truffle-config.js
 
-sudo cp /vagrant/faucet.json /home/vagrant/tezos-workplace/faucet.json
+sudo cp /vagrant/tezos-workspace/faucet.json /home/vagrant/tezos-workplace/faucet.json
 
-sudo cp /vagrant/importWorkFolders.sh /home/vagrant/importWorkFolders.sh
+sudo cp /vagrant/tezos-workspace/importWorkFolders.sh /home/vagrant/importWorkFolders.sh
 
 sudo sed -i -e 's/\r$//' /home/vagrant/importWorkFolders.sh
 sudo sed -i -e 's/\r$//' /home/vagrant/tezos-workplace/faucet.json
