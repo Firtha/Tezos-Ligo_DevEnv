@@ -6,5 +6,7 @@ Vagrant.configure("2") do |config|
         v.memory = 4096
     end
 
+    config.vm.boot_timeout = 900
+
     config.vm.provision :shell, path: "provisionning.sh"
 end
