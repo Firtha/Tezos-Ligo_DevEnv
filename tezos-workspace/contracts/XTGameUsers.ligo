@@ -1,5 +1,3 @@
-//#include "../utils/XTGameTypes.ligo"
-
 // TODO :
 // - Allows admins to retrieve only the amount of money they have injected 
 //      o Add a timestamp so admin can retrieve injected money after a waiting time (with some interests ?)
@@ -10,17 +8,17 @@
 type storage is record
     contract_owner : address;
     contract_balance : nat;
+    games_contract : set(address);
+    
     admins : set(address);
-    gameUsers : big_map(address, nat);
+    game_users : big_map(address, nat);
     bans : set(address);
-
-    games_contract : address;
 end
 
 // UTILS
 //
 function getUserBalance(const s : storage) : nat is block {
-    const supposed_balance : option (nat) = Big_map.find_opt ((Tezos.source : address), s.gameUsers);
+    const supposed_balance : option (nat) = Big_map.find_opt ((Tezos.source : address), s.game_users);
     const actual_balance : nat = case supposed_balance of
     | None -> 0n
     | Some(n) -> n
@@ -45,7 +43,7 @@ function checkAdminAccess(const s : storage): unit is block {
 function setGamesContract(const games_addr : address; const s : storage) : storage is
   block {
     if Tezos.source = s.contract_owner
-        then s.games_contract := games_addr;
+        then s.games_contract := Set.add(games_addr, s.games_contract);
     else failwith ("Forbidden: You are not the contract's owner.");
   } with s
 
@@ -102,25 +100,25 @@ function retrieveFund (const value : nat ; const s : storage) : storage is
 
 function registerUser (const value : nat ; const s : storage) : storage is
   block {
-    if Big_map.mem ((Tezos.source : address), s.gameUsers)
+    if Big_map.mem ((Tezos.source : address), s.game_users)
         then failwith ("Warning: You are already registered.");
     else skip;
 
-    s.gameUsers[Tezos.source] := value;
+    s.game_users[Tezos.source] := value;
   } with s
 
 function injectFundAsUser (const value : nat ; const s : storage) : storage is
   block {
-    if not Big_map.mem ((Tezos.source : address), s.gameUsers)
+    if not Big_map.mem ((Tezos.source : address), s.game_users)
         then failwith ("Warning: You are already registered.");
     else skip;
 
-    s.gameUsers[Tezos.source] := getUserBalance(s) + value;
+    s.game_users[Tezos.source] := getUserBalance(s) + value;
   } with s
 
 function retrieveFundAsUser (const value : nat ; const s : storage) : storage is
   block {
-    if not Big_map.mem ((Tezos.source : address), s.gameUsers)
+    if not Big_map.mem ((Tezos.source : address), s.game_users)
         then failwith ("Warning: You are already registered.");
     else skip;
 
@@ -128,7 +126,7 @@ function retrieveFundAsUser (const value : nat ; const s : storage) : storage is
     if my_balance <= value
         then failwith ("Error: Insufficient fund.");
     else block{
-        s.gameUsers[Tezos.source] := abs(my_balance - value);
+        s.game_users[Tezos.source] := abs(my_balance - value);
     };
   } with s
 //
