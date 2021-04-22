@@ -1,6 +1,6 @@
 type loto is record
     state: bool;
-    players_bet: big_map(address, nat);
+    players_bet: map(address, nat);
     nb_players: nat;
     total_balance: nat;
 end
@@ -18,6 +18,7 @@ type blackjack is record
     player: address;
     bet_value: nat;
     cards: list(nat);
+    cards_value: nat;
 end
 
 type blackjacks_list is record
@@ -34,7 +35,7 @@ type caster is record
 end
 
 type casters_list is record
-    games: map(nat, caster);
+    games: big_map(nat, caster);
     next_id: nat;
     join_limit: nat;
     bet_min: nat;

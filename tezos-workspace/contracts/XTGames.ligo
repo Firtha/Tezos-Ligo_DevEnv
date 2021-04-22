@@ -28,15 +28,16 @@ function setRegisterContract(const register_addr : address; const s : storage) :
 //  - Solo player: automatic
 function blackjackOpen(const bet : nat; const s : storage) : storage is
   block {
-    isRegisteredUser(Tezos.source, s);
+    isRegisteredUser(Tezos.source);
 
-    const first_card : nat = randNat();
+    const first_card : nat = randNat(1n, 13n);
 
     const new_game: blackjack = record[
         state = True;
         player = Tezos.source;
         bet_value = bet;
-        cards = list [11n];
+        cards = list [first_card];
+        cards_value = first_card;
     ];
 
     const current_id : nat = s.blackjacks.next_id;
@@ -47,15 +48,38 @@ function blackjackOpen(const bet : nat; const s : storage) : storage is
 
 function blackjackDrawCard(const game_id : nat; const s : storage) : storage is
   block {
-    isRegisteredUser(Tezos.source, s);
+    isRegisteredUser(Tezos.source);
     
-    if not isGamePlayer(game_id, Tezos.source, s)
-        then failwith ("Forbidden: You are not a the player of this game_id.")
-    else skip;
+    const supposed_target_game : option (blackjack) = Big_map.find_opt ((game_id : nat), s.blackjacks.games);
+    const target_game : blackjack = case supposed_target_game of
+    | None -> failwith ("Error: Retrieving this game's datas caused an error.")
+    | Some(n) -> n
+    end;
 
-    const next_card : nat = randNat();
-    const larger_list : list (int) = 5 # my_list 
-    
+    isBlackjackPlayer(target_game, Tezos.source);
+
+    const next_card : nat = randNat(1n, 13n);
+    const card_list : list(nat) = target_game.cards;
+    target_game.cards := next_card # card_list;
+    const new_cards_value : nat = target_game.cards_value + next_card;
+    target_game.cards_value := new_cards_value;
+
+    if new_cards_value = 21n
+        then block {
+            // WINNER
+            const reward_value : nat = target_game.bet_value * 3n;
+            if triggerRegisterPayment(1n, reward_value)
+                then skip
+            else skip;          // TODO: Plan something in case the payment have gone wrong
+        }
+    else if new_cards_value > 21n
+        then block {
+            // LOSER
+            if triggerRegisterPayment(0n, target_game.bet_value)
+                then skip
+            else skip;          // TODO: Plan something in case the payment have gone wrong
+        }
+    else skip;
   } with s
 
 type action is
